@@ -1,4 +1,4 @@
-import re
+﻿import re
 import string
 import operator
 import string
@@ -78,9 +78,14 @@ def sentencescore(sentence,ngrams,counttotal,numword,n):
     elif len(sentence)>1:
         for i in range(len(sentence)-n+1):
             if i ==0:
-                score += math.log((counttotal[sentence[i]]+1.0)*1.0/(numword+1.0))
-            if " ".join(sentence[i:i+n]) in ngrams:
+                if sentence[i] in counttotal:
+                    score += math.log((counttotal[sentence[i]]+1.0)*1.0/(numword+1.0))
+                else:
+                    score += math.log(1.0/(numword+1.0))
+            elif " ".join(sentence[i:i+n]) in ngrams:
                 score += math.log((ngrams[" ".join(sentence[i:i+n])]+1.0)*1.0/(counttotal[sentence[i]]+1.0))
+            else :
+                score += math.log(1.0/(counttotal[sentence[i]]+1.0))
     else:
         score=100.0
     return score
