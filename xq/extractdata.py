@@ -60,27 +60,30 @@ def getNgrams(input, n):
         output[ngramTemp] += 1
     return output, counttotal, count
 
-def sentencescore(content,ngrams,counttotal,numword,n):
+def contentscore(content,ngrams,counttotal,numword,n):
     content=cleanText(content)
     content = content.split('\n')
     point=[]
     for sentence in content:
-        sentence = sentence.split(' ')
-        score=0.0
-        #print (sentence,len(sentence))
-        if len(sentence)==1 and sentence[0] != '':
-            score = math.log((counttotal[sentence[0]]+1.0)*1.0/(numword+1.0))
-        elif len(sentence)>1:
-            for i in range(len(sentence)-n+1):
-                if i ==0:
-                    score += math.log((counttotal[sentence[i]]+1.0)*1.0/(numword+1.0))
-                if " ".join(sentence[i:i+n]) in ngrams:
-                    score += math.log((ngrams[" ".join(sentence[i:i+n])]+1.0)*1.0/(counttotal[sentence[i]]+1.0))
-        else:
-            score=100.0
-        #print (score)
+        score=sentencescore(sentence,ngrams,counttotal,numword,n)
         point.append(score)
     return point
+
+def sentencescore(sentence,ngrams,counttotal,numword,n):
+    sentence = sentence.split(' ')
+    score=0.0
+    #print (sentence,len(sentence))
+    if len(sentence)==1 and sentence[0] != '':
+        score = math.log((counttotal[sentence[0]]+1.0)*1.0/(numword+1.0))
+    elif len(sentence)>1:
+        for i in range(len(sentence)-n+1):
+            if i ==0:
+                score += math.log((counttotal[sentence[i]]+1.0)*1.0/(numword+1.0))
+            if " ".join(sentence[i:i+n]) in ngrams:
+                score += math.log((ngrams[" ".join(sentence[i:i+n])]+1.0)*1.0/(counttotal[sentence[i]]+1.0))
+    else:
+        score=100.0
+    return score
 
 content = open("train_sample.txt").read()
 #content = open("./train-data/train.txt").read()
@@ -94,6 +97,9 @@ with open('counttotal'+'.json','a') as outfile:
     outfile.write('\n')
 #sortedNGrams = sorted(ngrams.items(), key = operator.itemgetter(1), reverse=True) #=True 降序排列
 #print(sortedNGrams)
-point=sentencescore(content,ngrams,counttotal,count,2)
+point=contentscore(content,ngrams,counttotal,count,2)
 print (ngrams,counttotal)
 print (point)
+
+
+   
